@@ -1,6 +1,17 @@
 [
     {
         "title":"Test Title",
-        "text":"Test text"
+        "text":"Test text",
+        "id": 1
+    },
+    {
+        "title":"Go shopping",
+        "text":"Apples, tea",
+        "id": 2
+    },
+    {
+        "title":"Homework",
+        "text":"API routing, employee database",
+        "id": 3
     }
 ]

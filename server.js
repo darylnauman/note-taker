@@ -17,13 +17,7 @@ let notes = JSON.parse(fs.readFileSync(path.join(__dirname, '/db/db.json')))
 
 // --- Routes ---
 
-// HTML Routes
 app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, '/public/notes.html')));
-
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '/public/index.html')));
-
-// API Routes
-
 app.get('/api/notes', (req, res) => res.json(notes));
 
 // Receives a new note to save on the request body
@@ -39,6 +33,19 @@ app.post('/api/notes', (req, res) => {
     fs.writeFileSync(path.join(__dirname, './db/db.json'), JSON.stringify(notes));
     res.json(notes);
 });
+
+app.delete('/api/notes/:id', (req, res) => {
+    const noteIdToRemove = req.params.id;
+    
+    notes = notes.filter( (note) => {
+        return note.id !== noteIdToRemove;
+    });
+
+    fs.writeFileSync(path.join(__dirname, './db/db.json'), JSON.stringify(notes));
+    res.send("Note deleted.");
+});
+
+app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '/public/index.html')));
 
 // Starts the server to begin listening
 app.listen(PORT, () => console.log(`App listening on PORT ${PORT}`));

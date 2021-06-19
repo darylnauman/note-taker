@@ -2,7 +2,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 // Set up the Express App
 const app = express();
@@ -13,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
+let notes = JSON.parse(fs.readFileSync(path.join(__dirname, '/db/db.json')))
+
 // --- Routes ---
 
 // HTML Routes
@@ -22,25 +24,20 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, '/public/index.html
 
 // API Routes
 
-// Read the db.json file and return all saved notes as JSON.
-app.get('/api/notes', (req, res) => {
-    
-    fs.readFile(`${__dirname}/db/db.json`, 'utf8', (err, data) => {
-        if (err) throw err;
-        let notes = JSON.parse(data);
-        res.json(notes);
-    })
+app.get('/api/notes', (req, res) => res.json(notes));
 
-});
-
-// - POST /api/notes should receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client. You'll need to find a way to give each note a unique id when it's saved (look into npm packages that could do this for you).
+// Receives a new note to save on the request body
+// Adds it to the db.json file, and then return the new note to the client
 app.post('/api/notes', (req, res) => {
     const newNote = req.body;
     newNote.id = uuidv4();
-    
-    console.log(newNote);
+
+    // console.log(newNote);
     notes.push(newNote);
-    res.json(newNote);
+
+    // notes.forEach( (element) => console.log(element));
+    fs.writeFileSync(path.join(__dirname, './db/db.json'), JSON.stringify(notes));
+    res.json(notes);
 });
 
 // Starts the server to begin listening
